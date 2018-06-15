@@ -8,13 +8,13 @@ cache:
 before_deploy: npm install now --no-save
 deploy:
   - provider: script # Run a custom deployment script which we will define below
-    script: now --token $NOW_TOKEN
+    script: now --public --token $NOW_TOKEN
     skip_cleanup: true
     on:
       all_branches: true
       master: false
   - provider: script
-    script: now --token $NOW_TOKEN && now alias --token $NOW_TOKEN
+    script: now --public --token $NOW_TOKEN && now alias --public --token $NOW_TOKEN
     skip_cleanup: true
     on:
       master: true

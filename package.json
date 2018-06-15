@@ -1,0 +1,14 @@
+{
+  "name": "cinema1337",
+  "version": "1.0.0",
+  "description": "cinema1337",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "ws": "^5.2.0"
+  }
+}

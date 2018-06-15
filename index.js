@@ -1,16 +1,16 @@
 const express = require('express');
-const ws = require('ws');
+const WebSocket = require('ws');
 const http = require('http');
 
 const app = express();
 
 const server = http.createServer(app);
 
-const wsServer = new ws.Server({ server });
+const wsServer = new WebSocket.Server({ server });
 
 wsServer.on('connection', (ws) => {
   ws.on('message', (message) => {
-    console.log*('the message is: ', message);
+    console.log('the message is: ', message);
     ws.send(`Hello, you sent -> ${message}`);
   });
 

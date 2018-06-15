@@ -1,0 +1,20 @@
+language: node_js
+node_js: node
+env:
+  - NOW_TOKEN=YrSiGbvZR7qkaKTQsHij8oQr
+cache:
+  directories:
+    - "node_modules"
+before_deploy: npm install now --no-save
+deploy:
+  - provider: script # Run a custom deployment script which we will define below
+    script: now --public --token $NOW_TOKEN
+    skip_cleanup: true
+    on:
+      all_branches: true
+      master: false
+  - provider: script
+    script: now --public --token $NOW_TOKEN && now alias --public --token $NOW_TOKEN
+    skip_cleanup: true
+    on:
+      master: true

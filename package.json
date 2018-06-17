@@ -20,7 +20,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3"
   },
   "now": {
-    "name": "cinema1337",
-    "alias": "cinema1337.now.sh"
+    "name": "cinemaTELE2",
+    "alias": "cinemaTELE2.now.sh"
   }
 }

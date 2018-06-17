@@ -15,7 +15,11 @@ const lobbies = {};
 wsServer.on('connection', (ws) => {
   ws.on('message', (message) => {
     console.log('the message is: ', String(message));
-    const { payload: { user, lobby, stateData }, command, target } = JSON.parse(String(message));
+    const {
+      payload: {
+        user, lobby, stateData, speedTest,
+      }, command, target,
+    } = JSON.parse(String(message));
 
     if (user.userType === 'Admin') {
       if (!admins[user.userName]) {
@@ -43,6 +47,19 @@ wsServer.on('connection', (ws) => {
         console.log('admins[user.userName].lobby.players', admins[user.userName].lobby.players);
         admins[user.userName].lobby.players[target].ws.send(JSON.stringify(onStartDemoReq));
         console.log(`Demo started on user ${user.userName}`);
+      }
+
+      if (command.command === 'broadcastSpeedTest') {
+        const onBroadcastSpeedTestReq = JSON.stringify({
+          payload: { speedTest },
+          command: {
+            setType: 'playerCommands',
+            command: 'onSpeedTest',
+          },
+        });
+
+        Object.values(admins[user.userName].lobby.players)
+          .forEach(player => player.ws.send(onBroadcastSpeedTestReq));
       }
     }
 
@@ -85,10 +102,8 @@ wsServer.on('connection', (ws) => {
 
     ws.send(`Hello, you sent -> ${String(message)}`);
   });
-
   ws.send('Hi there, I am a WebSocket1337 server');
 });
-
 server.listen(process.env.PORT || 8999, () => {
   console.log(`Server started on port ${server.address().port} :)`);
 });

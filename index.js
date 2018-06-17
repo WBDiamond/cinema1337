@@ -13,11 +13,12 @@ const players = {};
 const lobbies = {};
 
 wsServer.on('connection', (ws) => {
+  console.log('Someone`s connected!');
   ws.on('message', (message) => {
     console.log('the message is: ', String(message));
     const {
       payload: {
-        user, lobby, stateData, speedTest,
+        user, lobby, stateData, speedTest, onlineVid,
       }, command, target,
     } = JSON.parse(String(message));
 
@@ -61,6 +62,18 @@ wsServer.on('connection', (ws) => {
         Object.values(admins[user.userName].lobby.players)
           .forEach(player => player.ws.send(onBroadcastSpeedTestReq));
       }
+    }
+
+    if (command.command === 'toggleOnlineVideo') {
+      const onToggleOnlineVideoReq = JSON.stringify({
+        payload: { onlineVid },
+        command: {
+          setType: 'playerCommands',
+          command: 'toggleOnlineVid',
+        },
+      });
+
+      admins[user.userName].lobby.players[target].ws.send(onToggleOnlineVideoReq);
     }
 
     if (user.userType === 'Player') {

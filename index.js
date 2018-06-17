@@ -8,10 +8,82 @@ const server = http.createServer(app);
 
 const wsServer = new WebSocket.Server({ server });
 
+const admins = {};
+const players = {};
+const lobbies = {};
+
 wsServer.on('connection', (ws) => {
   ws.on('message', (message) => {
-    console.log('the message is: ', message);
-    ws.send(`Hello, you sent -> ${message}`);
+    console.log('the message is: ', String(message));
+    const { payload: { user, lobby, stateData }, command, target } = JSON.parse(String(message));
+
+    if (user.userType === 'Admin') {
+      if (!admins[user.userName]) {
+        admins[user.userName] = { ws, name: user.userName };
+      } else {
+        admins[user.userName].ws = ws;
+      }
+
+      if (command.command === 'createLobby') {
+        lobbies[user.userName] = { admin: admins[user.userName], players: {} };
+        admins[user.userName].lobby = lobbies[user.userName];
+
+        console.log(`Lobby ${user.userName} is created`);
+      }
+
+      if (command.command === 'startDemo') {
+        const onStartDemoReq = {
+          payload: {},
+          command: {
+            setType: 'playerCommands',
+            command: 'startDemo',
+          },
+        };
+
+        console.log('admins[user.userName].lobby.players', admins[user.userName].lobby.players);
+        admins[user.userName].lobby.players[target].ws.send(JSON.stringify(onStartDemoReq));
+        console.log(`Demo started on user ${user.userName}`);
+      }
+    }
+
+    if (user.userType === 'Player') {
+      if (!players[user.userName]) {
+        players[user.userName] = { ws, name: user.userName };
+      } else {
+        players[user.userName].ws = ws;
+      }
+
+      if (command.command === 'joinLobby') {
+        lobbies[lobby].players[user.userName] = players[user.userName];
+
+        const onConnectReq = {
+          payload: { user },
+          command: {
+            setType: 'adminCommands',
+            command: 'playerConnected',
+          },
+        };
+
+        console.log('lobbies[lobby]', lobbies[lobby]);
+        lobbies[lobby].admin.ws.send(JSON.stringify(onConnectReq));
+        console.log(`User ${user.userName} joined lobby ${lobby}`);
+      }
+
+      if (command.command === 'refreshData' && lobbies[lobby] && lobbies[lobby].players[user.userName]) {
+        const onRefreshReq = {
+          payload: { stateData, user },
+          command: {
+            setType: 'playerCommands',
+            command: 'refreshData',
+          },
+        };
+
+        console.log(JSON.stringify(onRefreshReq));
+        lobbies[lobby].admin.ws.send(JSON.stringify(onRefreshReq));
+      }
+    }
+
+    ws.send(`Hello, you sent -> ${String(message)}`);
   });
 
   ws.send('Hi there, I am a WebSocket1337 server');

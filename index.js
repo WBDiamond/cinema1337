@@ -50,7 +50,7 @@ wsServer.on('connection', (ws) => {
         console.log(`Demo started on user ${user.userName}`);
       }
 
-      if (command.command === 'broadCastSpeedTest') {
+      if (command.command === 'broadCastSpeedTest' && admins[user.userName].lobby.players) {
         const onBroadcastSpeedTestReq = JSON.stringify({
           payload: { speedTest },
           command: {
@@ -76,6 +76,8 @@ wsServer.on('connection', (ws) => {
         },
       });
 
+
+      // admins[user.userName].lobby.players[target].ws.send(JSON.stringify(onStartDemoReq));
       admins[user.userName].lobby.players[target].ws.send(onToggleOnlineVideoReq);
     }
 
@@ -86,7 +88,7 @@ wsServer.on('connection', (ws) => {
         players[user.userName].ws = ws;
       }
 
-      if (command.command === 'joinLobby') {
+      if (command.command === 'joinLobby' && lobbies[lobby]) {
         lobbies[lobby].players[user.userName] = players[user.userName];
 
         const onConnectReq = {

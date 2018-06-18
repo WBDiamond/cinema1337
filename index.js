@@ -30,10 +30,12 @@ wsServer.on('connection', (ws) => {
       }
 
       if (command.command === 'createLobby') {
-        lobbies[user.userName] = { admin: admins[user.userName], players: {} };
-        admins[user.userName].lobby = lobbies[user.userName];
+        if (!lobbies[user.userName]) {
+          lobbies[user.userName] = { admin: admins[user.userName], players: {} };
+          admins[user.userName].lobby = lobbies[user.userName];
 
-        console.log(`Lobby ${user.userName} is created`);
+          console.log(`Lobby ${user.userName} is created`);
+        }
       }
 
       if (command.command === 'startDemo') {

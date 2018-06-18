@@ -50,7 +50,7 @@ wsServer.on('connection', (ws) => {
         console.log(`Demo started on user ${user.userName}`);
       }
 
-      if (command.command === 'broadcastSpeedTest') {
+      if (command.command === 'broadCastSpeedTest') {
         const onBroadcastSpeedTestReq = JSON.stringify({
           payload: { speedTest },
           command: {
@@ -60,7 +60,10 @@ wsServer.on('connection', (ws) => {
         });
 
         Object.values(admins[user.userName].lobby.players)
-          .forEach(player => player.ws.send(onBroadcastSpeedTestReq));
+          .forEach((player) => {
+            console.log(`speed test ${speedTest} sent to player ${player.name}`);
+            player.ws.send(onBroadcastSpeedTestReq);
+          });
       }
     }
 

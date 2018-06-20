@@ -16,6 +16,49 @@ const admins = {};
 const players = {};
 const lobbies = {};
 
+function initAdminOnClose(ws, adminName) {
+  ws.on('close', () => {
+    console.log(`Admin ${adminName} disconnected from lobby`);
+    const lobbyPlayers = admins[adminName].lobby.players;
+    if (!_.isEmpty(players)) {
+      console.log('Closing connection for all players');
+      Object.values(players).forEach((player) => {
+        if (lobbyPlayers.ws && lobbyPlayers.ws.readyState === WebSocket.OPEN) {
+          console.log(`Closing connection for player ${player.name}`);
+          player.ws.close();
+          delete players[players.name];
+        }
+      });
+    }
+
+    console.log(`Deleting lobby ${adminName} and admin ${adminName}`);
+    delete lobbies[adminName];
+    delete admins[adminName];
+  });
+}
+
+function initPlayerOnClose(ws, player) {
+  ws.on('close', () => {
+    console.log(`Player ${player.userName} disconnected`);
+    delete players[player.userName];
+
+    // if (player.lobby) {
+    //   const request = {
+    //     payload: { user },
+    //     command: {
+    //       setType: 'playerCommands',
+    //       command: 'playerDisconnected',
+    //     },
+    //   };
+    //
+    //   console.log(`Disconnecting player ${playerName} from server lobby`);
+    //   if (player.lobby.admin.ws.readyState === WebSocket.OPEN) {
+    //     player.lobby.admin.ws.send(JSON.stringify(request));
+    //   }
+    // }
+  });
+}
+
 function sendError(ws, error, command) {
   const errorResponse = new Response({
     command,
@@ -48,32 +91,13 @@ wsServer.on('connection', (ws) => {
     if (user.userType === 'Admin') {
       if (!admins[user.userName]) {
         admins[user.userName] = { ws, name: user.userName };
+        initAdminOnClose(ws, user.userName);
       } else {
-        admins[user.userName].ws = ws;
+        // admins[user.userName].ws = ws;
       }
 
       const admin = admins[user.userName];
       const { ws: adminWs, name: adminName } = admin;
-
-
-      ws.on('close', () => {
-        console.log(`Admin ${adminName} disconnected from lobby`);
-        const lobbyPlayers = admins[adminName].lobby.players;
-        if (!_.isEmpty(players)) {
-          console.log('Closing connection for all players');
-          Object.values(players).forEach((player) => {
-            if (lobbyPlayers.ws && lobbyPlayers.ws.readyState === WebSocket.OPEN) {
-              console.log(`Closing connection for player ${player.name}`);
-              player.ws.close();
-              delete players[players.name];
-            }
-          });
-        }
-
-        console.log(`Deleting lobby ${adminName} and admin ${adminName}`);
-        delete lobbies[adminName];
-        delete adminName[adminName];
-      });
 
       if (command === 'createLobby') {
         if (!lobbies[adminName]) {
@@ -173,32 +197,14 @@ wsServer.on('connection', (ws) => {
     if (user.userType === 'Player') {
       if (!players[user.userName]) {
         players[user.userName] = { ws, name: user.userName };
+        initPlayerOnClose(ws, user);
       } else {
-        players[user.userName].ws = ws;
+        // return;
+        // players[user.userName].ws = ws;
       }
 
       const player = players[user.userName];
       const { ws: playerWs, name: playerName } = player;
-
-      ws.on('close', () => {
-        console.log(`Player ${playerName} disconnected`);
-        delete players[playerName];
-
-        if (player.lobby) {
-          const request = {
-            payload: { user },
-            command: {
-              setType: 'playerCommands',
-              command: 'playerDisconnected',
-            },
-          };
-
-          console.log(`Disconnecting player ${playerName} from server lobby`);
-          if (player.lobby.admin.ws.readyState === WebSocket.OPEN) {
-            player.lobby.admin.ws.send(JSON.stringify(request));
-          }
-        }
-      });
 
       if (command === 'toggleOnlineVideoConfirm') {
         const request = new Request({
@@ -272,7 +278,6 @@ wsServer.on('connection', (ws) => {
 
     ws.send(`Hello, you sent -> ${String(message)}`);
   });
-  ws.send('Hi there, I am a WebSocket1337 server');
 });
 
 server.listen(process.env.PORT || 8999, () => {

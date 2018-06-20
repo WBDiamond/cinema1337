@@ -204,9 +204,10 @@ wsServer.on('connection', (ws) => {
           command,
         });
 
-        const { admin } = lobbies[lobbyName];
-
-        admin.ws.send(JSON.stringify(request));
+        if (lobbies[lobbyName]) {
+          const { admin } = lobbies[lobbyName];
+          admin.ws.send(JSON.stringify(request));
+        }
       }
 
       if (command === 'joinLobby') {

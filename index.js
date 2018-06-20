@@ -155,12 +155,9 @@ wsServer.on('connection', (ws) => {
       }
 
       if (command === 'toggleOnlineVideo') {
-        const requset = JSON.stringify({
+        const request = new Request({
           payload: { onlineVid },
-          command: {
-            setType: 'playerCommands',
-            command: 'toggleOnlineVideo',
-          },
+          command: 'toggleOnlineVideo',
         });
 
         const player = admin.lobby.players[target];
@@ -168,7 +165,7 @@ wsServer.on('connection', (ws) => {
 
         if (playerWs && playerWs.readyState === WebSocket.OPEN) {
           console.log(`Setting video status to ${onlineVid} on client ${player.name}`);
-          playerWs.send(requset);
+          playerWs.send(JSON.stringify(request));
         } else {
           sendError(
             adminWs,

@@ -194,7 +194,9 @@ wsServer.on('connection', (ws) => {
           };
 
           console.log(`Disconnecting player ${playerName} from server lobby`);
-          player.lobby.admin.ws.send(JSON.stringify(request));
+          if (player.lobby.admin.ws.readyState === WebSocket.OPEN) {
+            player.lobby.admin.ws.send(JSON.stringify(request));
+          }
         }
       });
 

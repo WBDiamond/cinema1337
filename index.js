@@ -98,13 +98,10 @@ wsServer.on('connection', (ws) => {
       }
 
       if (command === 'startDemo') {
-        const request = {
+        const request = new Request({
           payload: {},
-          command: {
-            setType: 'playerCommands',
-            command,
-          },
-        };
+          command,
+        });
 
         const player = admin.lobby.players[target];
         const playerWs = player ? player.ws : undefined;
@@ -157,7 +154,7 @@ wsServer.on('connection', (ws) => {
       if (command === 'toggleOnlineVideo') {
         const request = new Request({
           payload: { onlineVideo },
-          command: 'toggleOnlineVideo',
+          command,
         });
 
         const player = admin.lobby.players[target];
@@ -204,6 +201,17 @@ wsServer.on('connection', (ws) => {
         }
       });
 
+      if (command === 'toggleOnlineVideoConfirm') {
+        const request = new Request({
+          payload: { user },
+          command,
+        });
+
+        const { admin } = lobbies[lobbyName];
+
+        admin.ws.send(JSON.stringify(request));
+      }
+
       if (command === 'joinLobby') {
         if (!lobbies[lobbyName]) {
           sendError(
@@ -227,7 +235,6 @@ wsServer.on('connection', (ws) => {
           return;
         }
         const { admin } = lobbies[lobbyName];
-        console.log('lobbies[lobbyName]', lobbies[lobbyName], lobbies);
 
         const request = new Request({
           payload: { user },

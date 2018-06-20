@@ -225,7 +225,7 @@ wsServer.on('connection', (ws) => {
         } else {
           sendError(
             playerWs,
-            `Client with name ${playerName} already in lobby, change name to join lobby`,
+            `Клиент с таким именем ${playerName} уже существует, смените имя`,
             command,
           );
 

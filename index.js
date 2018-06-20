@@ -41,7 +41,7 @@ wsServer.on('connection', (ws) => {
     console.log('the message is: ', String(message));
     const {
       payload: {
-        user, lobbyName, stateData, speedTest, onlineVid, target,
+        user, lobbyName, stateData, speedTest, onlineVideo, target,
       }, command,
     } = JSON.parse(String(message));
 
@@ -156,7 +156,7 @@ wsServer.on('connection', (ws) => {
 
       if (command === 'toggleOnlineVideo') {
         const request = new Request({
-          payload: { onlineVid },
+          payload: { onlineVideo },
           command: 'toggleOnlineVideo',
         });
 
@@ -164,7 +164,7 @@ wsServer.on('connection', (ws) => {
         const playerWs = player ? player.ws : undefined;
 
         if (playerWs && playerWs.readyState === WebSocket.OPEN) {
-          console.log(`Setting video status to ${onlineVid} on client ${player.name}`);
+          console.log(`Setting video status to ${onlineVideo} on client ${player.name}`);
           playerWs.send(JSON.stringify(request));
         } else {
           sendError(

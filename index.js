@@ -134,7 +134,7 @@ wsServer.on('connection', (ws) => {
             .forEach((player) => {
               if (player.ws.readyState === WebSocket.OPEN) {
                 console.log(`speed test ${speedTest} sent to player ${player.name}`);
-                player.ws.send(request);
+                player.ws.send(JSON.stringify(request));
               } else {
                 sendError(
                   adminWs,

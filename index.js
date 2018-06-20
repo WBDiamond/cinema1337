@@ -124,7 +124,7 @@ wsServer.on('connection', (ws) => {
       }
 
       if (command === 'broadCastSpeedTest') {
-        const request = JSON.stringify({
+        const request = new Request({
           payload: { speedTest },
           command: 'onSpeedTest',
         });

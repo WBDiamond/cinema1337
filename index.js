@@ -256,16 +256,13 @@ wsServer.on('connection', (ws) => {
       }
 
       if (command === 'refreshData' && lobbies[lobbyName] && lobbies[lobbyName].players[user.userName]) {
-        const onRefreshReq = {
+        const request = new Request({
           payload: { stateData, user },
-          command: {
-            setType: 'playerCommands',
-            command: 'refreshData',
-          },
-        };
+          command: 'refreshData',
+        });
 
-        console.log(JSON.stringify(onRefreshReq));
-        lobbies[lobbyName].admin.ws.send(JSON.stringify(onRefreshReq));
+        console.log(JSON.stringify(request));
+        lobbies[lobbyName].admin.ws.send(JSON.stringify(request));
       }
     }
 

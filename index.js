@@ -80,6 +80,13 @@ function sendCb(ws, message, command) {
 wsServer.on('connection', (ws) => {
   console.log('Someone`s connected!');
 
+  const response = new Response({
+    command: 'connect',
+    message: 'connected',
+  });
+
+  ws.send(JSON.stringify(response));
+
   ws.on('message', (message) => {
     console.log('the message is: ', String(message));
     const {

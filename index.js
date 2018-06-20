@@ -126,10 +126,7 @@ wsServer.on('connection', (ws) => {
       if (command === 'broadCastSpeedTest') {
         const request = JSON.stringify({
           payload: { speedTest },
-          command: {
-            setType: 'playerCommands',
-            command: 'onSpeedTest',
-          },
+          command: 'onSpeedTest',
         });
 
         if (!_.isEmpty(admin.lobby.players)) {

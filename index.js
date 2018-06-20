@@ -216,7 +216,7 @@ wsServer.on('connection', (ws) => {
         if (!lobbies[lobbyName]) {
           sendError(
             playerWs,
-            `Не найдено лобби с именем ${lobbyName}`,
+            `Не найден сервер с номером ${lobbyName}`,
             command,
           );
 

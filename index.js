@@ -39,7 +39,7 @@ function initAdminOnClose(ws, adminName) {
 function initPlayerOnClose(ws, player) {
   ws.on('close', () => {
     console.log(`Player ${player.name} disconnected`);
-    if (player.lobby.admin && player.lobby.admin.ws.readyState === WebSocket.OPEN) {
+    if (player.lobby && player.lobby.admin && player.lobby.admin.ws.readyState === WebSocket.OPEN) {
       player.lobby.admin.ws.send(new Request({
         payload: { user: player.name },
         command: 'userDisconnect',

@@ -192,7 +192,7 @@ wsServer.on('connection', (ws) => {
     if (user.userType === 'Player') {
       if (!players[user.userName]) {
         players[user.userName] = { ws, name: user.userName };
-        initPlayerOnClose(ws, user);
+        initPlayerOnClose(ws, players[user.userName]);
       }
 
       const player = players[user.userName];

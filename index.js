@@ -41,7 +41,7 @@ function initPlayerOnClose(ws, player) {
     console.log(`Player ${player.name} disconnected`);
     if (player.lobby && player.lobby.admin && player.lobby.admin.ws.readyState === WebSocket.OPEN) {
       player.lobby.admin.ws.send(JSON.stringify(new Request({
-        payload: { user: player.name },
+        payload: { user: { userName: player.name } },
         command: 'userDisconnect',
       })));
     }

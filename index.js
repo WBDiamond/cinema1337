@@ -38,23 +38,12 @@ function initAdminOnClose(ws, adminName) {
 
 function initPlayerOnClose(ws, player) {
   ws.on('close', () => {
-    console.log(`Player ${player.userName} disconnected`);
-    delete players[player.userName];
-
-    // if (player.lobby) {
-    //   const request = {
-    //     payload: { user },
-    //     command: {
-    //       setType: 'playerCommands',
-    //       command: 'playerDisconnected',
-    //     },
-    //   };
-    //
-    //   console.log(`Disconnecting player ${playerName} from server lobby`);
-    //   if (player.lobby.admin.ws.readyState === WebSocket.OPEN) {
-    //     player.lobby.admin.ws.send(JSON.stringify(request));
-    //   }
-    // }
+    console.log(`Player ${player.name} disconnected`);
+    player.lobby.admin.ws.send(new Request({
+      payload: { user: player.name },
+      command: 'userDisconnect',
+    }));
+    delete players[player.name];
   });
 }
 
@@ -98,8 +87,6 @@ wsServer.on('connection', (ws) => {
       if (!admins[user.userName]) {
         admins[user.userName] = { ws, name: user.userName };
         initAdminOnClose(ws, user.userName);
-      } else {
-        // admins[user.userName].ws = ws;
       }
 
       const admin = admins[user.userName];
@@ -204,9 +191,6 @@ wsServer.on('connection', (ws) => {
       if (!players[user.userName]) {
         players[user.userName] = { ws, name: user.userName };
         initPlayerOnClose(ws, user);
-      } else {
-        // return;
-        // players[user.userName].ws = ws;
       }
 
       const player = players[user.userName];

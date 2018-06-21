@@ -19,11 +19,10 @@ const lobbies = {};
 function initAdminOnClose(ws, adminName) {
   ws.on('close', () => {
     console.log(`Admin ${adminName} disconnected from lobby`);
-    const lobbyPlayers = admins[adminName].lobby.players;
     if (!_.isEmpty(players)) {
       console.log('Closing connection for all players');
       Object.values(players).forEach((player) => {
-        if (lobbyPlayers.ws && lobbyPlayers.ws.readyState === WebSocket.OPEN) {
+        if (player.ws && player.ws.readyState === WebSocket.OPEN) {
           console.log(`Closing connection for player ${player.name}`);
           player.ws.close();
           delete players[players.name];

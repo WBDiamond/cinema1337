@@ -40,10 +40,10 @@ function initPlayerOnClose(ws, player) {
   ws.on('close', () => {
     console.log(`Player ${player.name} disconnected`);
     if (player.lobby && player.lobby.admin && player.lobby.admin.ws.readyState === WebSocket.OPEN) {
-      player.lobby.admin.ws.send(new Request({
+      player.lobby.admin.ws.send(JSON.stringify(new Request({
         payload: { user: player.name },
         command: 'userDisconnect',
-      }));
+      })));
     }
     delete players[player.name];
   });

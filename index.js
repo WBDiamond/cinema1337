@@ -24,7 +24,7 @@ function initAdminOnClose(ws, adminName) {
       console.log('Closing connection for all players');
       Object.values(players).forEach((player) => {
         if (lobbyPlayers.ws && lobbyPlayers.ws.readyState === WebSocket.OPEN) {
-          console.log(`Closing connection for player ${player.userName}`);
+          console.log(`Closing connection for player ${player.name}`);
           player.ws.close();
           delete players[players.name];
         }
@@ -189,7 +189,7 @@ wsServer.on('connection', (ws) => {
         const playerWs = player ? player.ws : undefined;
 
         if (playerWs && playerWs.readyState === WebSocket.OPEN) {
-          console.log(`Setting video status to ${onlineVideo} on client ${player.userName}`);
+          console.log(`Setting video status to ${onlineVideo} on client ${player.name}`);
           playerWs.send(JSON.stringify(request));
         } else {
           sendError(

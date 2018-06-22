@@ -192,7 +192,7 @@ wsServer.on('connection', (ws) => {
               }
             });
         } else {
-          sendError(adminWs, `Ошибка сервер ${admin.lobby.name} пустой, подключите клиентов перед замером скорости`, command);
+          sendError(adminWs, `Ошибка сервер ${admin.name} пустой, подключите клиентов перед замером скорости`, command);
         }
       }
 

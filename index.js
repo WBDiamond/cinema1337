@@ -18,7 +18,7 @@ const players = {};
 const lobbies = {};
 
 function pingEveryone() {
-  console.log('PING');
+  // console.log('PING');
   Object.values(admins).forEach((admin) => {
     if (admin.ws.readyState === WebSocket.OPEN) {
       admin.ws.ping();

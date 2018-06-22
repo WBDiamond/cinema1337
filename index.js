@@ -268,7 +268,9 @@ wsServer.on('connection', (ws) => {
       }
     }
 
-    ws.send(`Hello, you sent -> ${String(message)}`);
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(`Hello, you sent -> ${String(message)}`);
+    }
   });
 });
 

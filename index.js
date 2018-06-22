@@ -12,9 +12,26 @@ const server = http.createServer(app);
 
 const wsServer = new WebSocket.Server({ server });
 
+
 const admins = {};
 const players = {};
 const lobbies = {};
+
+function pingEveryone() {
+  console.log('PING');
+  Object.values(admins).forEach((admin) => {
+    if (admin.ws.readyState === WebSocket.OPEN) {
+      admin.ws.ping();
+    }
+    Object.values(admin.lobby.players).forEach((player) => {
+      if (player.ws.readyState === WebSocket.OPEN) {
+        player.ws.ping();
+      }
+    });
+  });
+
+  setTimeout(pingEveryone, 2000);
+}
 
 function initAdminOnClose(ws, adminName) {
   ws.on('close', () => {
@@ -277,3 +294,5 @@ wsServer.on('connection', (ws) => {
 server.listen(process.env.PORT || 8999, () => {
   console.log(`Server started on port ${server.address().port} :)`);
 });
+
+pingEveryone();

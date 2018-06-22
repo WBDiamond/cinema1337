@@ -23,11 +23,14 @@ function pingEveryone() {
     if (admin.ws.readyState === WebSocket.OPEN) {
       admin.ws.ping();
     }
-    Object.values(admin.lobby.players).forEach((player) => {
-      if (player.ws.readyState === WebSocket.OPEN) {
-        player.ws.ping();
-      }
-    });
+
+    if (admin.lobby) {
+      Object.values(admin.lobby.players).forEach((player) => {
+        if (player.ws.readyState === WebSocket.OPEN) {
+          player.ws.ping();
+        }
+      });
+    }
   });
 
   setTimeout(pingEveryone, 2000);
@@ -124,6 +127,15 @@ wsServer.on('connection', (ws) => {
         } else {
           lobbies[adminName].admin = admin;
           admin.lobby = lobbies[adminName];
+
+          Object.values(admin.lobby.players).forEach((player) => {
+            const request = new Request({
+              payload: { user: { userName: player.name } },
+              command: 'joinLobby',
+            });
+
+            admin.ws.send(JSON.stringify(request));
+          });
 
           sendCb(
             adminWs,

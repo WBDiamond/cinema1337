@@ -182,7 +182,7 @@ wsServer.on('connection', (ws) => {
         } else {
           sendError(
             adminWs,
-            `error: can't set video status on client ${player.name ? player.name : null}, client ws status: ${playerWs ? playerWs.readyState : null}`,
+            `error: can't set video status on client ${player ? player.name : null}, client ws status: ${playerWs ? playerWs.readyState : null}`,
             command,
           );
         }

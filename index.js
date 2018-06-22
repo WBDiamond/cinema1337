@@ -192,7 +192,7 @@ wsServer.on('connection', (ws) => {
               }
             });
         } else {
-          sendError(adminWs, 'error: lobbyName is empty!', command);
+          sendError(adminWs, `Ошибка сервер ${admin.lobby.name} пустой, подключите клиентов перед замером скорости`, command);
         }
       }
 

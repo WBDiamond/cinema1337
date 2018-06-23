@@ -313,7 +313,9 @@ wsServer.on('connection', (ws) => {
         });
 
         console.log(JSON.stringify(request));
-        lobbies[lobbyName].admin.ws.send(JSON.stringify(request));
+        if (lobbies[lobbyName].admin.ws === WebSocket.OPEN) {
+          lobbies[lobbyName].admin.ws.send(JSON.stringify(request));
+        }
       }
     }
 

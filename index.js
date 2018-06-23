@@ -196,6 +196,26 @@ const adminSubscribe = ({
     const admin = admins[user.userName];
     const { ws: adminWs, name: adminName } = admin;
 
+
+    if (command === 'disconnect') {
+      console.log(`Manual disconnect from admin ${adminName}`);
+      if (!_.isEmpty(admin.lobby.players)) {
+        console.log(`Deleting lobby ${adminName}, disconnecting users`);
+        Object.values(admin.lobby.players).forEach((player) => {
+          if (player.ws.readyState === WebSocket.OPEN) {
+            player.ws.close();
+            delete players[player.name];
+          }
+        });
+      }
+      if (adminWs.readyState === WebSocket.OPEN) {
+        console.log(`Closing ws for admin ${adminName}`);
+        adminWs.close();
+      }
+
+      delete admins[adminName];
+    }
+
     if (command === 'createLobby') {
       if (!lobbies[adminName]) {
         lobbies[adminName] = { admin, players: {} };

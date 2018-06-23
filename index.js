@@ -173,7 +173,7 @@ const playersSubscribe = ({
       });
 
       console.log(JSON.stringify(request));
-      if (lobbies[lobbyName].admin.ws === WebSocket.OPEN) {
+      if (lobbies[lobbyName].admin.ws.readyState === WebSocket.OPEN) {
         lobbies[lobbyName].admin.ws.send(JSON.stringify(request));
       }
     }

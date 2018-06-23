@@ -70,9 +70,11 @@ function initPlayerOnClose(ws, player) {
     console.log(`Closing props: event code - ${event.code}, event reason - ${event.reason}`);
 
     sockets.delete(ws);
-    const lobbyPlayers = player.lobby.players;
+    if (player.lobby) {
+      const lobbyPlayers = player.lobby.players;
 
-    delete lobbyPlayers[player.name];
+      delete lobbyPlayers[player.name];
+    }
     delete players[player.name];
   });
 }

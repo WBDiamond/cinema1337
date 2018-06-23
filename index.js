@@ -147,6 +147,7 @@ wsServer.on('connection', (ws) => {
         } else {
           lobbies[adminName].admin = admin;
           admin.lobby = lobbies[adminName];
+          admin.lobby.admin.ws = adminWs;
 
           Object.values(admin.lobby.players).forEach((player) => {
             const request = new Request({

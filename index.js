@@ -208,12 +208,11 @@ const adminSubscribe = ({
           }
         });
       }
-      if (adminWs.readyState === WebSocket.OPEN) {
-        console.log(`Closing ws for admin ${adminName}`);
-        adminWs.close();
-      }
-
-      delete admins[adminName];
+      sendCb(
+        adminWs,
+        `CB on admin ${adminName} disconnect`,
+        'disconnect',
+      );
     }
 
     if (command === 'createLobby') {

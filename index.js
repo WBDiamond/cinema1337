@@ -208,6 +208,9 @@ const adminSubscribe = ({
           }
         });
       }
+
+      delete admins[adminName];
+      delete lobbies[adminName];
       sendCb(
         adminWs,
         `CB on admin ${adminName} disconnect`,

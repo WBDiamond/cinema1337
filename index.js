@@ -203,7 +203,10 @@ const adminSubscribe = ({
         console.log(`Deleting lobby ${adminName}, disconnecting users`);
         Object.values(admin.lobby.players).forEach((player) => {
           if (player.ws.readyState === WebSocket.OPEN) {
-            player.ws.close();
+            const request = new Request({
+              command: 'disconnect',
+            });
+            player.ws.send(JSON.stringify(request));
             delete players[player.name];
           }
         });

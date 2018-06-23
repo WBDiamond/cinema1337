@@ -16,6 +16,7 @@ const wsServer = new WebSocket.Server({ server });
 const admins = {};
 const players = {};
 const lobbies = {};
+const sockets = new Set();
 
 function pingEveryone() {
   // console.log('PING');
@@ -37,34 +38,41 @@ function pingEveryone() {
 }
 
 function initAdminOnClose(ws, adminName) {
-  ws.on('close', () => {
+  ws.on('close', (event) => {
     console.log(`Admin ${adminName} disconnected from lobby`);
-    if (!_.isEmpty(players)) {
-      console.log('Closing connection for all players');
-      Object.values(players).forEach((player) => {
-        if (player.ws && player.ws.readyState === WebSocket.OPEN) {
-          console.log(`Closing connection for player ${player.name}`);
-          player.ws.close();
-          delete players[players.name];
-        }
-      });
+    console.log(`Closing props: event code - ${event.code}, event reason - ${event.reason}`);
+
+    if (event.code === 1000) {
+      if (!_.isEmpty(players)) {
+        console.log('Closing connection for all players');
+        Object.values(players).forEach((player) => {
+          if (player.ws && player.ws.readyState === WebSocket.OPEN) {
+            console.log(`Closing connection for player ${player.name}`);
+            player.ws.close();
+            sockets.delete(player.ws);
+            delete players[players.name];
+          }
+        });
+
+        console.log(`Deleting lobby ${adminName} and admin ${adminName}`);
+        delete lobbies[adminName];
+      }
     }
 
-    console.log(`Deleting lobby ${adminName} and admin ${adminName}`);
-    delete lobbies[adminName];
+    sockets.delete(ws);
     delete admins[adminName];
   });
 }
 
 function initPlayerOnClose(ws, player) {
-  ws.on('close', () => {
+  ws.on('close', (event) => {
     console.log(`Player ${player.name} disconnected`);
-    if (player.lobby && player.lobby.admin && player.lobby.admin.ws.readyState === WebSocket.OPEN) {
-      player.lobby.admin.ws.send(JSON.stringify(new Request({
-        payload: { user: { userName: player.name } },
-        command: 'userDisconnect',
-      })));
-    }
+    console.log(`Closing props: event code - ${event.code}, event reason - ${event.reason}`);
+
+    sockets.delete(ws);
+    const lobbyPlayers = player.lobby.players;
+
+    delete lobbyPlayers[player.name];
     delete players[player.name];
   });
 }
@@ -90,12 +98,15 @@ function sendCb(ws, message, command) {
 wsServer.on('connection', (ws) => {
   console.log('Someone`s connected!');
 
-  const response = new Response({
-    command: 'connect',
-    message: 'connected',
-  });
+  if (!sockets.has(ws)) {
+    const response = new Response({
+      command: 'connect',
+      message: 'connected',
+    });
 
-  ws.send(JSON.stringify(response));
+    ws.send(JSON.stringify(response));
+    sockets.add(ws);
+  }
 
   ws.on('message', (message) => {
     console.log('the message is: ', String(message));
@@ -106,8 +117,17 @@ wsServer.on('connection', (ws) => {
     } = JSON.parse(String(message));
 
     if (user.userType === 'Admin') {
-      if (!admins[user.userName]) {
-        admins[user.userName] = { ws, name: user.userName };
+      // if (!admins[user.userName]) {
+      //   admins[user.userName] = { ws, name: user.userName };
+      //   initAdminOnClose(ws, user.userName);
+      // }
+
+      if (command === 'reg') {
+        if (!admins[user.userName]) {
+          admins[user.userName] = { ws, name: user.userName };
+        } else {
+          admins[user.userName].ws = ws;
+        }
         initAdminOnClose(ws, user.userName);
       }
 

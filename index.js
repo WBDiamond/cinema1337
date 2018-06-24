@@ -73,6 +73,13 @@ function initPlayerOnClose(ws, player) {
     if (player.lobby) {
       const lobbyPlayers = player.lobby.players;
 
+      if (player.lobby.admin.ws.readyState === WebSocket.OPEN) {
+        player.lobby.admin.ws.send(JSON.stringify(new Request({
+          payload: { user: { userName: player.name } },
+          command: 'userDisconnect',
+        })));
+      }
+
       delete lobbyPlayers[player.name];
     }
     delete players[player.name];

@@ -162,7 +162,9 @@ const playersSubscribe = ({
       if (playerWs && playerWs.readyState === WebSocket.OPEN) {
         console.log(`User ${user.userName} joins lobby ${lobbyName}`);
         console.log('request', request);
-        admin.ws.send(JSON.stringify(request));
+        if (admin && admin.ws.readyState === WebSocket.OPEN) {
+          admin.ws.send(JSON.stringify(request));
+        }
         playerWs.send(JSON.stringify(new Response({
           command,
         })));

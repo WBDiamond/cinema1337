@@ -353,11 +353,17 @@ wsServer.on('connection', (ws) => {
 
   ws.on('message', (message) => {
     console.log('the message is: ', String(message));
+    const parsedMessage = JSON.parse(String(message));
+
+    if (!parsedMessage.payload) {
+      return;
+    }
+
     const {
       payload: {
         user, lobbyName, stateData, speedTest, onlineVideo, target,
       }, command,
-    } = JSON.parse(String(message));
+    } = parsedMessage;
 
     if (user.userType === 'Admin') {
       adminSubscribe({

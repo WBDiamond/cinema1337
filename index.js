@@ -124,7 +124,9 @@ const playersSubscribe = ({
 
       if (lobbies[lobbyName]) {
         const { admin } = lobbies[lobbyName];
-        admin.ws.send(JSON.stringify(request));
+        if (admin.ws.readyState === WebSocket.OPEN) {
+          admin.ws.send(JSON.stringify(request));
+        }
       }
     }
 
@@ -202,6 +204,11 @@ const adminSubscribe = ({
         admins[user.userName].ws = ws;
       }
       initAdminOnClose(ws, user.userName);
+    }
+
+
+    if (!admins[user.userName]) {
+      return;
     }
 
     const admin = admins[user.userName];

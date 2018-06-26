@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 class Request {
   constructor({
     payload, command, message,

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 class Response {
   constructor({
     payload, command, error, message,
